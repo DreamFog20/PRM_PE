@@ -1,61 +1,76 @@
-# Báo Cáo Bài Thực Hành PE (Môn PRM392 - Lớp SE1828)
+# BÁO CÁO ỨNG DỤNG LẤY DỮ LIỆU TỪ NGUỒN PUBLIC
 
-**Môn học:** PRM392 (Lập trình ứng dụng di động)  
-**Lớp:** SE1828  
-**Đề bài:** Ứng dụng quản lý item từ nguồn public (Online/Offline, Yêu thích, Tìm kiếm)
+## 1. Thông Tin Ứng Dụng
+- **Nền tảng:** Android (Flutter) / Web (Hỗ trợ demo)
+- **Cơ sở dữ liệu:** SQLite (sqflite) lưu trữ cục bộ.
+- **Tính năng đặc biệt nổi bật:** Đồng bộ dữ liệu Online/Offline từ API public, Quản lý danh sách Yêu thích thời gian thực qua State Management (Provider), Chức năng Tìm kiếm (Search).
+
+---
+
+## 2. Cấu Trúc Cơ Sở Dữ Liệu (Database)
+
+Ứng dụng sử dụng SQLite với 1 bảng chính để lưu trữ dữ liệu tải về từ API định dạng local và bảo toàn trạng thái yêu thích.
+
+### Mô tả bảng chi tiết
+
+**1. items**
+- `id` (PK, INTEGER)
+- `name` (TEXT) - Tên của item
+- `description` (TEXT) - Thông tin chi tiết (được lấy từ trường email hoặc thông tin khác của public API)
+- `isFavorite` (INTEGER) - Trạng thái yêu thích: 1 (Đã thích), 0 (Chưa thích)
+
+*(Cấu trúc sơ đồ)*
+> **[Ảnh 1: Cấu trúc cơ sở dữ liệu SQLite]**
+┌───────────────────────┐
+│        items          │
+├───────────────────────┤
+│ id (PK)               │
+│ name (TEXT)           │
+│ description (TEXT)    │
+│ isFavorite (INTEGER)  │
+└───────────────────────┘
 
 ---
 
-## 1. Giới thiệu chức năng
+## 3. Các Chức Năng Chính & Ảnh Demo
 
-Ứng dụng đáp ứng đầy đủ yêu cầu của đề bài với các Screen như sau:
+### 3.1. Trạng Thái Online/Offline (Screen 1)
+- **Mô tả:** 
+  - **Trạng thái Online:** Chức năng gọi API đến nguồn public (`jsonplaceholder.typicode.com/users`) để lấy danh sách người dùng, sau đó đồng bộ hóa và tiến hành lưu trữ hoặc cập nhật vào SQLite local.
+  - **Trạng thái Offline:** Ứng dụng đọc dữ liệu đã được lưu từ SQLite. Nếu người dùng chọn mà chưa có dữ liệu trong máy, ứng dụng sẽ xuất hiện AlertDialog thông báo lỗi và yêu cầu phải chạy trạng thái Online để nạp dữ liệu.
+- *(Chèn ảnh màn hình Screen 1 và Thông báo)*
+> **[Ảnh 2: Màn hình chọn Trạng Thái (Screen 1)]**
 
-- **Screen 1 (Khởi động - Trạng thái Online/Offline):**
-  - Giao diện cung cấp hai tính năng: **Online** và **Offline**.
-  - **Online:** Khi nhấn, ứng dụng thực hiện call API lấy dữ liệu thực tế từ `jsonplaceholder.typicode.com/users` và đồng bộ (lưu trữ) vào **SQLite** của thiết bị. Nếu đã có thì cập nhật mới dữ liệu.
-  - **Offline:** Ứng dụng đọc dữ liệu từ local. Nếu chưa có dữ liệu local, ứng dụng sẽ có thông báo đỏ yêu cầu người dùng phải thực hiện trạng thái Online trước.
-  
-- **Screen 2 (Danh sách Items):**
-  - Hiển thị danh sách các item được tải về, mỗi item kèm theo Avatar (icon đại diện bằng chữ cái đầu) và icon "hình sao" thể hiện trạng thái Yêu thích.
-  - Những item đã được yêu thích sẽ có icon sáng lên và được tô nền phân biệt (màu vàng nhạt/amber 100).
-  - Thanh AppBar có thanh trạng thái Tìm Kiếm (Search) để tìm kiếm theo tên các item.
+### 3.2. Hiển Thị Danh Sách Items (Screen 2)
+- **Mô tả:** Hiển thị danh sách item lấy từ local database. Mỗi card hiển thị:
+  - Tên (Title), Mô tả (Subtitle).
+  - Avatar hình tròn chứa chữ cái đầu tiên của tên.
+  - Icon Yêu Thích (hình ngôi sao). Nếu mục này đã được đánh dấu thích, màu nền card sẽ chuyển sang vàng nhạt (Amber 100) và icon sao sẽ được tô đậm nổi bật. Có thể click vào một item để xem chi tiết.
+- *(Chèn ảnh Danh sách các Items)*
+> **[Ảnh 3: Danh sách Items (Screen 2)]**
 
-- **Screen 3 (Chi Tiết Item):**
-  - Cung cấp mô tả chi tiết của từng item. Chứa nút lớn cho phép người dùng thay đổi trạng thái "Thêm Vào Yêu Thích" hoặc "Bỏ Yêu Thích".
+### 3.3. Xem/Sửa Chi Tiết (Screen 3)
+- **Mô tả:** Hiển thị đầy đủ avatar cỡ lớn, tên và chi tiết của một item. Phía dưới có Button khổ lớn cho phép người dùng click để "Thêm Vào Yêu Thích" hoặc "Bỏ Yêu Thích". Sẽ cập nhật giá trị tương ứng vào database và thay đổi trạng thái UI đồng bộ qua các màn hình khác.
+- *(Chèn ảnh chi tiết item tương ứng)*
+> **[Ảnh 4: Chi tiết Item (Screen 3)]**
 
-- **Screen 4 (Danh sách Đã Lưu):**
-  - Nơi liệt kê danh sách các item đã được đánh dấu thích.
-  - Cung cấp tính năng thay đổi "Yêu Thích", ngay khi bỏ yêu thích, mục đó sẽ lập tức biến mất khỏi Screen này mà không cần tải lại trang.
-  - Vẫn hỗ trợ tính năng Search chung tương tự Screen 2.
+### 3.4. Danh Sách Đã Lưu (Screen 4)
+- **Mô tả:** Màn hình phân loại những thẻ nhớ đã được "Thích" (`isFavorite = 1`). Người dùng nếu thao tác bỏ thích trực tiếp tại đây, item sẽ lập tức xóa hiển thị ra khỏi màn hình do sử dụng state management động.
+- *(Chèn ảnh màn hình danh sách đã lưu)*
+> **[Ảnh 5: Danh Sách Đã Lưu (Screen 4)]**
 
-## 2. Giao diện (Màu sắc và Thẩm mỹ)
-
-- Ứng dụng thiết kế theo **Material Design 3**, với tông màu chủ đạo là xanh (Blue Accent) và vàng nhạt (Amber) tạo cảm giác dễ chịu.
-- Nền màn hình được tinh chỉnh để tôn các **Card** thành viên.
-- Có đầy đủ các Notification dialog, SnackBar và Loading indicator (Spinner) khi tải dữ liệu đồng bộ mạng, tạo nên UX thân thiện, tối ưu, đảm bảo **không có bất kỳ lỗi vặt nào (Crash/Exception).**
-
-## 3. Kiến Trúc Database và Source Code
-
-- **Ngôn ngữ & Framework:** Nền tảng Flutter / Dart.
-- **Database (SQLite qua plugin `sqflite`):**
-  Tạo bảng `items` có cấu trúc:
-  ```sql
-  CREATE TABLE items(
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    description TEXT,
-    isFavorite INTEGER
-  )
-  ```
-- **State Management:** Mô hình **Provider** thông qua `AppProvider` giúp đồng bộ dữ liệu giữa tất cả Screening - nếu đổi "Yêu thích" ở Screen 3 thì khi trở về Screen 2, màu và icon của card sẽ lập tức thay đổi!
-
-## 4. Hình Ảnh & Demo Thực Tế
-
-> Vui lòng xem tệp video thao tác trực tiếp (`demo.webp` kèm theo trong thư mục máy!) ghi nhận mọi luồng chạy của ứng dụng, chứng minh ứng dụng không phát sinh lỗi trong quá trình sử dụng.
-
-*(Video trình chiếu quá trình khởi động, bấm tải từ mạng online, xem danh sách và lọc tìm kiếm, thêm vào yêu thích và chuyển trang)*
-
-![Demo Ứng Dụng Đang Chạy](demo.webp)
+### 3.5. Chức Năng Tìm Kiếm (Search)
+- **Mô tả:** Được đính kèm tại AppBar của Screen 2 và 4. Bằng cách ấn vào Icon kính lúp, AppBar sẽ chuyển sang chế độ gõ TextInput. Danh sách tự động lọc thông tin theo chuỗi input vừa nhập trùng với Tên hoặc Mô tả của item.
 
 ---
-*Báo cáo được hoàn thiện theo đúng tài liệu yêu cầu đối với bài kiểm tra PE thực hành.*
+
+## 4. Trải Nghiệm & Giao Diện (UI/UX)
+- Giao diện xây dựng theo chuẩn **Material Design 3**, thiết kế tinh tế dạng các box có bo góc (Radius). Khung nền và thẻ sử dụng hệ màu tươi sáng Blue Accent / Amber.
+- Thao tác nhanh nhẹn, State management (qua Provider) đảm nhiệm load giao diện trên Screen 2 và Screen 4 ngay lập tức khi DB thay đổi, không hề có độ trễ phải load lại trang.
+- Có hộp thoại (AlertDialog) và thanh bật lên (SnackBar) để hiển thị Feedback người dùng khi Tải thành công hay có Lỗi phát sinh.
+- Cam kết ứng dụng không có Lỗi biên dịch.
+
+---
+
+## 5. File Chạy Demo Kèm Theo
+- **Video / File Ảnh Demo:** `demo.webp` đi kèm ngay ngoài gốc thư mục source code, trình diễn chuỗi thao tác thực tế suốt tất cả màn hình (Tải API -> Hiển thị list -> Search list -> Click Item -> Yêu thích / Bỏ yêu thích -> Vào Đã lưu kiểm tra).
