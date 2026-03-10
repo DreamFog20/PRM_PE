@@ -36,7 +36,7 @@
 
 ### 3.1. Trạng Thái Online/Offline (Screen 1)
 - **Mô tả:** 
-  - **Trạng thái Online:** Chức năng gọi API đến nguồn public (`jsonplaceholder.typicode.com/users`) để lấy danh sách người dùng, sau đó đồng bộ hóa và tiến hành lưu trữ hoặc cập nhật vào SQLite local.
+  - **Trạng thái Online:** Chức năng gọi API đến nguồn public (`69afe475c63dd197feba84f9.mockapi.io/users`) để lấy danh sách người dùng, sau đó đồng bộ hóa và tiến hành lưu trữ hoặc cập nhật vào SQLite local.
   - **Trạng thái Offline:** Ứng dụng đọc dữ liệu đã được lưu từ SQLite. Nếu người dùng chọn mà chưa có dữ liệu trong máy, ứng dụng sẽ xuất hiện AlertDialog thông báo lỗi và yêu cầu phải chạy trạng thái Online để nạp dữ liệu.
 - *(Chèn ảnh màn hình Screen 1 và Thông báo)*
 > **[Ảnh 2: Màn hình chọn Trạng Thái (Screen 1)]**
