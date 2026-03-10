@@ -13,7 +13,7 @@ class Item {
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      id: json['id'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       name: json['name'] ?? 'Không có tên',
       description: json['email'] ?? 'Không có thông tin chi tiết',
       isFavorite: false,
